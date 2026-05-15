@@ -1,0 +1,80 @@
+{
+  "info": {
+    "name": "HDMS — Helpdesk Ticket Management System",
+    "description": "Phase 1 API collection. Import into Postman and run the FastAPI server on localhost:8000 first.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": { "method": "GET", "url": "{{base_url}}/", "description": "Verify the API is running" }
+    },
+    {
+      "name": "GET All Tickets",
+      "request": { "method": "GET", "url": "{{base_url}}/tickets/", "description": "Returns all tickets ordered by created_at DESC" }
+    },
+    {
+      "name": "GET Ticket by ID",
+      "request": { "method": "GET", "url": "{{base_url}}/tickets/1", "description": "Get a single ticket by its ID" }
+    },
+    {
+      "name": "POST Create Ticket",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/tickets/",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"employee_name\": \"Test User\",\n  \"department\": \"Engineering\",\n  \"issue_category\": \"VPN Issue\",\n  \"description\": \"Cannot connect to VPN after recent Windows update. Getting authentication error 602.\",\n  \"priority\": \"High\"\n}"
+        }
+      }
+    },
+    {
+      "name": "PUT Update Ticket Status",
+      "request": {
+        "method": "PUT",
+        "url": "{{base_url}}/tickets/1",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"Resolved\",\n  \"resolution_notes\": \"VPN client updated to latest version. Issue resolved.\"\n}"
+        }
+      }
+    },
+    {
+      "name": "PUT Update Priority",
+      "request": {
+        "method": "PUT",
+        "url": "{{base_url}}/tickets/2",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"priority\": \"Critical\",\n  \"status\": \"In Progress\"\n}"
+        }
+      }
+    },
+    {
+      "name": "DELETE Ticket",
+      "request": { "method": "DELETE", "url": "{{base_url}}/tickets/10", "description": "Delete a ticket permanently" }
+    },
+    {
+      "name": "GET Search — keyword",
+      "request": { "method": "GET", "url": "{{base_url}}/search?keyword=vpn", "description": "Full-text search across name, description, category" }
+    },
+    {
+      "name": "GET Search — status filter",
+      "request": { "method": "GET", "url": "{{base_url}}/search?status=Open", "description": "Filter by status" }
+    },
+    {
+      "name": "GET Search — combined filters",
+      "request": { "method": "GET", "url": "{{base_url}}/search?keyword=vpn&status=Open&priority=High", "description": "Combine keyword + status + priority filters" }
+    },
+    {
+      "name": "GET Dashboard Stats",
+      "request": { "method": "GET", "url": "{{base_url}}/stats", "description": "Returns counts by status, priority, category for the dashboard" }
+    }
+  ]
+}

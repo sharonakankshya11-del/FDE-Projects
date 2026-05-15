@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>HDMS — Helpdesk Ticket Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0b0f;
+  --surface:#111318;
+  --surface2:#181b22;
+  --surface3:#1f2330;
+  --border:#ffffff0f;
+  --border2:#ffffff18;
+  --text:#f0f2f8;
+  --text2:#9ba3b8;
+  --text3:#5c6480;
+  --accent:#6c8fff;
+  --accent2:#4a6df0;
+  --green:#2dd4a0;
+  --amber:#f5a623;
+  --red:#ff5f6d;
+  --purple:#b57bee;
+  --radius:12px;
+  --radius-lg:18px;
+  --font-display:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+}
+html{font-size:15px}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:700}
+
+/* Layout */
+.shell{display:flex;min-height:100vh}
+.sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:transform .3s}
+.main{margin-left:240px;flex:1;padding:36px 40px;min-height:100vh}
+
+/* Sidebar */
+.logo{padding:28px 24px 20px;border-bottom:1px solid var(--border)}
+.logo-badge{display:inline-flex;align-items:center;gap:10px}
+.logo-icon{width:34px;height:34px;background:var(--accent2);border-radius:9px;display:flex;align-items:center;justify-content:center}
+.logo-icon svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.logo-text{font-family:var(--font-display);font-size:15px;font-weight:800;letter-spacing:.02em}
+.logo-sub{font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-top:1px}
+.nav{padding:20px 14px;flex:1;display:flex;flex-direction:column;gap:4px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--radius);border:none;background:transparent;color:var(--text2);font-family:var(--font-body);font-size:13.5px;font-weight:500;cursor:pointer;transition:all .18s;text-align:left;width:100%}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:linear-gradient(135deg,#6c8fff18,#4a6df010);color:var(--accent);border:1px solid #6c8fff22}
+.nav-icon{width:18px;height:18px;flex-shrink:0;opacity:.7}
+.nav-item.active .nav-icon{opacity:1}
+.nav-badge{margin-left:auto;background:#ff5f6d22;color:#ff5f6d;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px}
+.sidebar-footer{padding:16px 24px;border-top:1px solid var(--border);font-size:11px;color:var(--text3)}
+.sidebar-footer strong{display:block;color:var(--text2);margin-bottom:3px;font-size:12px}
+
+/* Page header */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:32px;gap:16px}
+.page-title{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.page-subtitle{font-size:13px;color:var(--text2);margin-top:4px;font-weight:400}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;border:none;font-family:var(--font-body);font-size:13.5px;font-weight:600;cursor:pointer;transition:all .18s;text-decoration:none;white-space:nowrap}
+.btn-primary{background:var(--accent2);color:#fff;box-shadow:0 4px 18px #4a6df030}
+.btn-primary:hover{background:var(--accent);transform:translateY(-1px);box-shadow:0 6px 24px #6c8fff35}
+.btn-ghost{background:var(--surface2);color:var(--text2);border:1px solid var(--border2)}
+.btn-ghost:hover{background:var(--surface3);color:var(--text)}
+.btn-danger{background:#ff5f6d18;color:#ff5f6d;border:1px solid #ff5f6d22}
+.btn-danger:hover{background:#ff5f6d28}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:8px}
+.btn-icon{padding:8px;border-radius:8px}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+
+/* Metric cards */
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 22px;position:relative;overflow:hidden}
+.metric-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;opacity:.08;transform:translate(20px,-20px)}
+.metric-card.blue::before{background:var(--accent)}
+.metric-card.green::before{background:var(--green)}
+.metric-card.amber::before{background:var(--amber)}
+.metric-card.red::before{background:var(--red)}
+.metric-card.purple::before{background:var(--purple)}
+.metric-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:18px}
+.metric-icon.blue{background:#6c8fff18}
+.metric-icon.green{background:#2dd4a018}
+.metric-icon.amber{background:#f5a62318}
+.metric-icon.red{background:#ff5f6d18}
+.metric-icon.purple{background:#b57bee18}
+.metric-label{font-size:11px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;font-weight:600;margin-bottom:6px}
+.metric-value{font-family:var(--font-display);font-size:30px;font-weight:800;line-height:1}
+.metric-value.blue{color:var(--accent)}
+.metric-value.green{color:var(--green)}
+.metric-value.amber{color:var(--amber)}
+.metric-value.red{color:var(--red)}
+.metric-value.purple{color:var(--purple)}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11.5px;font-weight:600;letter-spacing:.01em}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.8}
+.badge-open{background:#6c8fff15;color:#8ba4ff}
+.badge-inprogress{background:#f5a62318;color:#f5a623}
+.badge-resolved{background:#2dd4a018;color:#2dd4a0}
+.badge-closed{background:#ffffff0a;color:var(--text3)}
+.badge-low{background:#2dd4a018;color:#2dd4a0}
+.badge-medium{background:#6c8fff18;color:#8ba4ff}
+.badge-high{background:#f5a62318;color:#f5a623}
+.badge-critical{background:#ff5f6d18;color:#ff5f6d}
+
+/* Ticket cards */
+.ticket-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;display:flex;flex-direction:column;gap:12px;transition:all .2s;cursor:pointer}
+.ticket-card:hover{border-color:var(--border2);background:var(--surface2);transform:translateY(-2px);box-shadow:0 8px 32px #00000040}
+.ticket-id{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:.06em;font-family:var(--font-display)}
+.ticket-category{font-size:15px;font-weight:700;color:var(--text);margin-top:2px;font-family:var(--font-display)}
+.ticket-desc{font-size:13px;color:var(--text2);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ticket-meta{display:flex;align-items:center;gap:10px;margin-top:2px}
+.avatar{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;font-family:var(--font-display);flex-shrink:0}
+.ticket-person{flex:1}
+.ticket-name{font-size:12.5px;font-weight:600;color:var(--text)}
+.ticket-dept{font-size:11px;color:var(--text3)}
+.ticket-actions{display:flex;gap:8px;border-top:1px solid var(--border);padding-top:14px;margin-top:2px}
+.ticket-actions .btn{flex:1;justify-content:center;font-size:12px;padding:7px 10px}
+
+/* Table */
+.table-wrap{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead tr{background:var(--surface2);border-bottom:1px solid var(--border)}
+th{padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--surface2)}
+td{padding:13px 16px;color:var(--text2);vertical-align:middle}
+td.bold{color:var(--text);font-weight:600}
+td.id{color:var(--accent);font-weight:700;font-family:var(--font-display);font-size:12px}
+
+/* Forms */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}
+.form-field{margin-bottom:18px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:7px;letter-spacing:.02em}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--surface2);border:1.5px solid var(--border2);border-radius:9px;padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:13.5px;outline:none;transition:border-color .18s;-webkit-appearance:none}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent)}
+.form-input.error,.form-select.error,.form-textarea.error{border-color:var(--red)}
+.form-textarea{min-height:100px;resize:vertical;line-height:1.6}
+.form-select option{background:var(--surface2)}
+.form-error{font-size:11px;color:var(--red);margin-top:4px}
+.form-actions{display:flex;gap:10px;margin-top:8px}
+.form-actions .btn{flex:1;justify-content:center;padding:12px 20px}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:#00000070;backdrop-filter:blur(4px);z-index:500;display:flex;align-items:center;justify-content:center;padding:24px;animation:fadeIn .18s}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;animation:slideUp .22s}
+.modal-header{padding:24px 26px 0;display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.modal-title{font-size:18px;font-weight:800;font-family:var(--font-display)}
+.modal-body{padding:0 26px 26px}
+.btn-close{width:32px;height:32px;border-radius:8px;border:none;background:var(--surface2);color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.btn-close:hover{background:var(--surface3);color:var(--text)}
+
+/* Search bar */
+.search-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.search-input-wrap{flex:1;min-width:220px;position:relative}
+.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;font-size:15px}
+.search-input{width:100%;background:var(--surface2);border:1.5px solid var(--border2);border-radius:9px;padding:10px 14px 10px 38px;color:var(--text);font-family:var(--font-body);font-size:13.5px;outline:none;transition:border-color .18s}
+.search-input:focus{border-color:var(--accent)}
+.filter-select{background:var(--surface2);border:1.5px solid var(--border2);border-radius:9px;padding:10px 14px;color:var(--text2);font-family:var(--font-body);font-size:13px;outline:none;cursor:pointer;transition:border-color .18s;-webkit-appearance:none;min-width:130px}
+.filter-select:focus{border-color:var(--accent)}
+
+/* Charts */
+.chart-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.chart-bar-label{font-size:12px;color:var(--text2);width:120px;flex-shrink:0}
+.chart-bar-track{flex:1;background:var(--surface2);border-radius:99px;height:7px;overflow:hidden}
+.chart-bar-fill{height:100%;border-radius:99px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.chart-bar-count{font-size:12px;color:var(--text3);width:28px;text-align:right;flex-shrink:0}
+
+/* Toast */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:14px 20px;font-size:13.5px;font-weight:500;box-shadow:0 12px 40px #00000060;z-index:900;display:flex;align-items:center;gap:10px;animation:slideUp .22s}
+.toast-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* Detail view */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:18px}
+.detail-row{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:2px}
+.detail-row:nth-child(even){background:var(--surface2)}
+.detail-row:last-child,.detail-row:nth-last-child(2):not(:nth-child(even)){border-bottom:none}
+.detail-key{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.detail-val{font-size:13.5px;color:var(--text);font-weight:500}
+
+/* Empty state */
+.empty{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.empty h3{font-size:16px;color:var(--text2);margin-bottom:6px}
+.empty p{font-size:13px}
+
+/* Animations */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .3s}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
+
+/* Progress ring */
+.ring{transform:rotate(-90deg)}
+
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+</style>
+</head>
+<body>
+
+<div class="shell">
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-badge">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><path d="M9 12h6M9 16h4"/></svg>
+      </div>
+      <div>
+        <div class="logo-text">HDMS</div>
+        <div class="logo-sub">Helpdesk System</div>
+      </div>
+    </div>
+  </div>
+  <nav class="nav">
+    <button class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-item" data-page="tickets" onclick="navigate('tickets')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg>
+      All Tickets
+      <span class="nav-badge" id="open-count">0</span>
+    </button>
+    <button class="nav-item" data-page="create" onclick="navigate('create')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      New Ticket
+    </button>
+    <button class="nav-item" data-page="search" onclick="navigate('search')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Search
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    <strong>Phase 1 · Internal IT</strong>
+    FastAPI · SQLite · React
+  </div>
+</aside>
+
+<!-- Main content -->
+<main class="main" id="main-content"></main>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-title">Ticket</h2>
+      <button class="btn-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" style="display:none">
+  <div class="toast-dot" id="toast-dot"></div>
+  <span id="toast-msg"></span>
+</div>
+
+<script>
+// Use relative paths for API calls to work from any host
+const API = window.location.origin;
+let tickets = [];
+let currentPage = 'dashboard';
+let toastTimer;
+
+// ── API helpers ──────────────────────────────────────────────────────────
+async function apiFetch(path, opts={}) {
+  try {
+    const r = await fetch(API + path, {
+      headers:{'Content-Type':'application/json'},
+      ...opts
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return r.status === 204 ? null : r.json();
+  } catch(e) {
+    showToast('API Error: ' + e.message, 'red');
+    throw e;
+  }
+}
+
+const getAllTickets  = ()       => apiFetch('/tickets/');
+const getTicket     = (id)     => apiFetch(`/tickets/${id}`);
+const createTicket  = (data)   => apiFetch('/tickets/', {method:'POST', body:JSON.stringify(data)});
+const updateTicket  = (id, d)  => apiFetch(`/tickets/${id}`, {method:'PUT', body:JSON.stringify(d)});
+const deleteTicket  = (id)     => apiFetch(`/tickets/${id}`, {method:'DELETE'});
+const searchTickets = (params) => apiFetch('/search?' + new URLSearchParams(params));
+const getStats      = ()       => apiFetch('/stats');
+
+// ── Toast ───────────────────────────────────────────────────────────────
+function showToast(msg, type='green') {
+  const t = document.getElementById('toast');
+  const colors = {green:getComputedStyle(document.documentElement).getPropertyValue('--green').trim(),
+    red:getComputedStyle(document.documentElement).getPropertyValue('--red').trim(),
+    blue:getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()};
+  document.getElementById('toast-msg').textContent = msg;
+  document.getElementById('toast-dot').style.background = colors[type] || colors.green;
+  t.style.display = 'flex';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.style.display = 'none', 3000);
+}
+
+// ── Modal ───────────────────────────────────────────────────────────────
+function openModal(title, html) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('modal').style.display = 'flex';
+}
+function closeModal() {
+  document.getElementById('modal').style.display = 'none';
+}
+
+// ── Navigation ──────────────────────────────────────────────────────────
+function navigate(page) {
+  currentPage = page;
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.page === page);
+  });
+  renderPage(page);
+}
+
+async function renderPage(page) {
+  const content = document.getElementById('main-content');
+  content.innerHTML = '<div class="empty"><div class="empty-icon">⏳</div><p>Loading...</p></div>';
+  if (page === 'dashboard') await renderDashboard();
+  else if (page === 'tickets') await renderTickets();
+  else if (page === 'create') renderCreate();
+  else if (page === 'search') await renderSearch();
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────────
+const PRIORITY_BADGE = {Low:'badge-low', Medium:'badge-medium', High:'badge-high', Critical:'badge-critical'};
+const STATUS_BADGE   = {Open:'badge-open','In Progress':'badge-inprogress',Resolved:'badge-resolved',Closed:'badge-closed'};
+const AVATAR_COLORS  = ['#6c8fff','#2dd4a0','#f5a623','#ff5f6d','#b57bee','#38bdf8','#fb923c'];
+function avatarColor(name) { let h=0; for(let c of name) h=(h*31+c.charCodeAt(0))&0xfffff; return AVATAR_COLORS[h % AVATAR_COLORS.length]; }
+function initials(name) { return name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase(); }
+function badge(label, type) { return `<span class="badge ${type}">${label}</span>`; }
+function timeAgo(iso) {
+  const d = Math.floor((Date.now() - new Date(iso)) / 1000);
+  if (d < 60) return 'just now';
+  if (d < 3600) return Math.floor(d/60) + 'm ago';
+  if (d < 86400) return Math.floor(d/3600) + 'h ago';
+  return Math.floor(d/86400) + 'd ago';
+}
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function ticketCardHTML(t) {
+  const color = avatarColor(t.employee_name);
+  return `
+  <div class="ticket-card fade-in" onclick="viewTicket(${t.ticket_id})">
+    <div>
+      <div class="ticket-id">#${t.ticket_id} · ${timeAgo(t.created_at)}</div>
+      <div class="ticket-category">${escHtml(t.issue_category)}</div>
+    </div>
+    <div class="ticket-desc">${escHtml(t.description)}</div>
+    <div class="ticket-meta">
+      <div class="avatar" style="background:${color}">${initials(t.employee_name)}</div>
+      <div class="ticket-person">
+        <div class="ticket-name">${escHtml(t.employee_name)}</div>
+        <div class="ticket-dept">${escHtml(t.department)}</div>
+      </div>
+      ${badge(t.priority, PRIORITY_BADGE[t.priority] || 'badge-medium')}
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:12px">
+      ${badge(t.status, STATUS_BADGE[t.status] || 'badge-open')}
+      <div class="ticket-actions" style="border-top:none;padding-top:0;margin-top:0;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();editTicket(${t.ticket_id})">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();confirmDelete(${t.ticket_id})">Delete</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Dashboard ───────────────────────────────────────────────────────────
+async function renderDashboard() {
+  let stats, recent;
+  try {
+    [stats, recent] = await Promise.all([getStats(), getAllTickets()]);
+    tickets = recent;
+    document.getElementById('open-count').textContent = stats.open;
+  } catch(e) { return; }
+
+  const byPri = stats.by_priority || {};
+  const byCat = stats.by_category || {};
+  const maxPri = Math.max(...Object.values(byPri), 1);
+  const maxCat = Math.max(...Object.values(byCat), 1);
+
+  document.getElementById('main-content').innerHTML = `
+  <div class="fade-in">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Real-time overview · ${stats.total} total tickets</p>
+      </div>
+      <button class="btn btn-primary" onclick="navigate('create')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Ticket
+      </button>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric-card blue">
+        <div class="metric-icon blue">🎫</div>
+        <div class="metric-label">Total</div>
+        <div class="metric-value blue">${stats.total}</div>
+      </div>
+      <div class="metric-card blue">
+        <div class="metric-icon blue">📬</div>
+        <div class="metric-label">Open</div>
+        <div class="metric-value blue">${stats.open}</div>
+      </div>
+      <div class="metric-card amber">
+        <div class="metric-icon amber">⚙️</div>
+        <div class="metric-label">In Progress</div>
+        <div class="metric-value amber">${stats.in_progress}</div>
+      </div>
+      <div class="metric-card green">
+        <div class="metric-icon green">✅</div>
+        <div class="metric-label">Resolved</div>
+        <div class="metric-value green">${stats.resolved}</div>
+      </div>
+      <div class="metric-card red">
+        <div class="metric-icon red">🚨</div>
+        <div class="metric-label">Critical</div>
+        <div class="metric-value red">${stats.critical}</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px">
+      <div class="card">
+        <h3 style="font-size:14px;font-family:var(--font-display);margin-bottom:18px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;font-weight:700">By Priority</h3>
+        ${['Critical','High','Medium','Low'].map(p => {
+          const colors={Critical:'var(--red)',High:'var(--amber)',Medium:'var(--accent)',Low:'var(--green)'};
+          const pct = stats.total ? Math.round((byPri[p]||0)/maxPri*100) : 0;
+          return `<div class="chart-bar-row">
+            <span class="chart-bar-label">${p}</span>
+            <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%;background:${colors[p]}"></div></div>
+            <span class="chart-bar-count">${byPri[p]||0}</span>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="card">
+        <h3 style="font-size:14px;font-family:var(--font-display);margin-bottom:18px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;font-weight:700">By Status</h3>
+        ${[
+          ['Open', stats.open, 'var(--accent)'],
+          ['In Progress', stats.in_progress, 'var(--amber)'],
+          ['Resolved', stats.resolved, 'var(--green)'],
+          ['Closed', stats.closed, 'var(--text3)'],
+        ].map(([s, v, c]) => {
+          const pct = stats.total ? Math.round(v/stats.total*100) : 0;
+          return `<div class="chart-bar-row">
+            <span class="chart-bar-label">${s}</span>
+            <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%;background:${c}"></div></div>
+            <span class="chart-bar-count">${v}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <h3 style="font-size:14px;font-family:var(--font-display);color:var(--text2);text-transform:uppercase;letter-spacing:.06em;font-weight:700">Recent Tickets</h3>
+        <button class="btn btn-ghost btn-sm" onclick="navigate('tickets')">View all →</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>ID</th><th>Employee</th><th>Category</th><th>Department</th><th>Priority</th><th>Status</th><th>Created</th><th>Actions</th>
+          </tr></thead>
+          <tbody>
+            ${recent.slice(0,8).map(t => `
+            <tr>
+              <td class="id">#${t.ticket_id}</td>
+              <td class="bold">${escHtml(t.employee_name)}</td>
+              <td>${escHtml(t.issue_category)}</td>
+              <td>${escHtml(t.department)}</td>
+              <td>${badge(t.priority, PRIORITY_BADGE[t.priority]||'badge-medium')}</td>
+              <td>${badge(t.status, STATUS_BADGE[t.status]||'badge-open')}</td>
+              <td>${timeAgo(t.created_at)}</td>
+              <td>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-ghost btn-sm" onclick="viewTicket(${t.ticket_id})">View</button>
+                  <button class="btn btn-ghost btn-sm" onclick="editTicket(${t.ticket_id})">Edit</button>
+                </div>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <h3 style="font-size:14px;font-family:var(--font-display);margin-bottom:18px;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;font-weight:700">Tickets by Category</h3>
+      ${Object.entries(byCat).map(([cat, v]) => {
+        const pct = Math.round(v/maxCat*100);
+        return `<div class="chart-bar-row">
+          <span class="chart-bar-label" style="width:180px">${cat}</span>
+          <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%;background:var(--purple)"></div></div>
+          <span class="chart-bar-count">${v}</span>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+// ── All Tickets ──────────────────────────────────────────────────────────
+async function renderTickets() {
+  try { tickets = await getAllTickets(); } catch(e) { return; }
+  document.getElementById('open-count').textContent = tickets.filter(t=>t.status==='Open').length;
+
+  document.getElementById('main-content').innerHTML = `
+  <div class="fade-in">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">All Tickets</h1>
+        <p class="page-subtitle" id="ticket-count">${tickets.length} tickets</p>
+      </div>
+      <button class="btn btn-primary" onclick="navigate('create')">+ New Ticket</button>
+    </div>
+    <div class="search-row">
+      <div class="search-input-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="tq" placeholder="Search tickets..." oninput="filterTickets()">
+      </div>
+      <select class="filter-select" id="fs" onchange="filterTickets()">
+        <option value="">All Statuses</option>
+        <option>Open</option><option>In Progress</option><option>Resolved</option><option>Closed</option>
+      </select>
+      <select class="filter-select" id="fp" onchange="filterTickets()">
+        <option value="">All Priorities</option>
+        <option>Low</option><option>Medium</option><option>High</option><option>Critical</option>
+      </select>
+      <select class="filter-select" id="fc" onchange="filterTickets()">
+        <option value="">All Categories</option>
+        <option>VPN Issue</option><option>Password Reset</option><option>Software Installation</option>
+        <option>Laptop Issue</option><option>Email Access</option><option>Network Connectivity</option><option>Hardware Request</option>
+      </select>
+    </div>
+    <div class="card-grid" id="ticket-grid">
+      ${tickets.map(ticketCardHTML).join('')}
+    </div>
+  </div>`;
+}
+
+function filterTickets() {
+  const q  = document.getElementById('tq')?.value.toLowerCase() || '';
+  const fs = document.getElementById('fs')?.value || '';
+  const fp = document.getElementById('fp')?.value || '';
+  const fc = document.getElementById('fc')?.value || '';
+
+  const filtered = tickets.filter(t =>
+    (!q || t.employee_name.toLowerCase().includes(q) || t.description.toLowerCase().includes(q) ||
+      t.issue_category.toLowerCase().includes(q) || String(t.ticket_id).includes(q)) &&
+    (!fs || t.status === fs) &&
+    (!fp || t.priority === fp) &&
+    (!fc || t.issue_category === fc)
+  );
+
+  const grid = document.getElementById('ticket-grid');
+  const cnt  = document.getElementById('ticket-count');
+  if (grid) grid.innerHTML = filtered.length
+    ? filtered.map(ticketCardHTML).join('')
+    : `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><h3>No tickets found</h3><p>Try different filters</p></div>`;
+  if (cnt) cnt.textContent = filtered.length + ' tickets';
+}
+
+// ── Create Ticket ───────────────────────────────────────────────────────
+function renderCreate() {
+  document.getElementById('main-content').innerHTML = `
+  <div class="fade-in" style="max-width:640px">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">New Ticket</h1>
+        <p class="page-subtitle">Submit a new support request</p>
+      </div>
+    </div>
+    <div class="card">
+      ${createFormHTML()}
+      <div class="form-actions">
+        <button class="btn btn-ghost" onclick="navigate('tickets')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCreate()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Submit Ticket
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function createFormHTML(t={}) {
+  const sel = (opts, val) => opts.map(o => `<option${o===val?' selected':''}>${o}</option>`).join('');
+  return `
+  <div class="form-grid">
+    <div class="form-field">
+      <label class="form-label">Employee Name *</label>
+      <input class="form-input" id="f-name" value="${escHtml(t.employee_name||'')}" placeholder="Full name"/>
+      <div class="form-error" id="e-name"></div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Department *</label>
+      <select class="form-select" id="f-dept">
+        <option value="">Select department</option>
+        ${sel(['Engineering','HR','Finance','Marketing','Operations','Sales','IT','Legal'], t.department)}
+      </select>
+      <div class="form-error" id="e-dept"></div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Issue Category *</label>
+      <select class="form-select" id="f-cat">
+        <option value="">Select category</option>
+        ${sel(['VPN Issue','Password Reset','Software Installation','Laptop Issue','Email Access','Network Connectivity','Hardware Request'], t.issue_category)}
+      </select>
+      <div class="form-error" id="e-cat"></div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Priority</label>
+      <select class="form-select" id="f-pri">
+        ${sel(['Low','Medium','High','Critical'], t.priority||'Medium')}
+      </select>
+    </div>
+  </div>
+  <div class="form-field">
+    <label class="form-label">Description *</label>
+    <textarea class="form-textarea" id="f-desc" placeholder="Describe the issue in detail...">${escHtml(t.description||'')}</textarea>
+    <div class="form-error" id="e-desc"></div>
+  </div>`;
+}
+
+function validateForm() {
+  let ok = true;
+  const check = (id, errId, msg) => {
+    const el = document.getElementById(id);
+    const v = el?.value?.trim();
+    const e = document.getElementById(errId);
+    if (!v) { if(e) e.textContent=msg; if(el) el.classList.add('error'); ok=false; }
+    else { if(e) e.textContent=''; if(el) el.classList.remove('error'); }
+    return v;
+  };
+  const name = check('f-name','e-name','Required');
+  const dept = check('f-dept','e-dept','Required');
+  const cat  = check('f-cat','e-cat','Required');
+  const desc = check('f-desc','e-desc','Required');
+  const pri  = document.getElementById('f-pri')?.value || 'Medium';
+  return ok ? {employee_name:name, department:dept, issue_category:cat, description:desc, priority:pri} : null;
+}
+
+async function submitCreate() {
+  const data = validateForm();
+  if (!data) return;
+  try {
+    await createTicket(data);
+    showToast('✓ Ticket created successfully!', 'green');
+    navigate('tickets');
+  } catch(e) {}
+}
+
+// ── Search Page ──────────────────────────────────────────────────────────
+async function renderSearch(results=null) {
+  if (!results) {
+    try { results = await getAllTickets(); } catch(e) { results = []; }
+  }
+  document.getElementById('main-content').innerHTML = `
+  <div class="fade-in">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Search Tickets</h1>
+        <p class="page-subtitle" id="search-count">${results.length} results</p>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:22px">
+      <div class="search-row" style="margin-bottom:0">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" id="sq" placeholder="Search by name, description, category..." value="">
+        </div>
+        <select class="filter-select" id="ss"><option value="">All Statuses</option><option>Open</option><option>In Progress</option><option>Resolved</option><option>Closed</option></select>
+        <select class="filter-select" id="sp"><option value="">All Priorities</option><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select>
+        <select class="filter-select" id="sc"><option value="">All Categories</option><option>VPN Issue</option><option>Password Reset</option><option>Software Installation</option><option>Laptop Issue</option><option>Email Access</option><option>Network Connectivity</option><option>Hardware Request</option></select>
+        <button class="btn btn-primary" onclick="doSearch()">Search</button>
+        <button class="btn btn-ghost" onclick="renderSearch()">Clear</button>
+      </div>
+    </div>
+    <div class="card-grid" id="search-results">
+      ${results.map(ticketCardHTML).join('')}
+    </div>
+  </div>`;
+  document.getElementById('sq')?.addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+}
+
+async function doSearch() {
+  const params = {};
+  const q = document.getElementById('sq')?.value;
+  const s = document.getElementById('ss')?.value;
+  const p = document.getElementById('sp')?.value;
+  const c = document.getElementById('sc')?.value;
+  if (q) params.keyword = q;
+  if (s) params.status  = s;
+  if (p) params.priority = p;
+  if (c) params.category = c;
+  try {
+    const results = await searchTickets(params);
+    const grid = document.getElementById('search-results');
+    const cnt  = document.getElementById('search-count');
+    if (grid) grid.innerHTML = results.length
+      ? results.map(ticketCardHTML).join('')
+      : `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><h3>No results found</h3><p>Try different keywords</p></div>`;
+    if (cnt) cnt.textContent = results.length + ' results';
+  } catch(e) {}
+}
+
+// ── View Ticket ──────────────────────────────────────────────────────────
+async function viewTicket(id) {
+  let t;
+  try { t = await getTicket(id); } catch(e) { return; }
+  const color = avatarColor(t.employee_name);
+  openModal(`Ticket #${t.ticket_id}`, `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <div class="avatar" style="background:${color};width:44px;height:44px;border-radius:10px;font-size:14px">${initials(t.employee_name)}</div>
+      <div>
+        <div style="font-size:16px;font-weight:700;font-family:var(--font-display)">${escHtml(t.employee_name)}</div>
+        <div style="font-size:12px;color:var(--text2)">${escHtml(t.department)}</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        ${badge(t.priority, PRIORITY_BADGE[t.priority]||'badge-medium')}
+        ${badge(t.status, STATUS_BADGE[t.status]||'badge-open')}
+      </div>
+    </div>
+    <h3 style="font-size:17px;font-family:var(--font-display);margin-bottom:10px">${escHtml(t.issue_category)}</h3>
+    <p style="color:var(--text2);font-size:13.5px;line-height:1.65;margin-bottom:20px">${escHtml(t.description)}</p>
+    <div class="detail-grid">
+      <div class="detail-row"><span class="detail-key">Ticket ID</span><span class="detail-val">#${t.ticket_id}</span></div>
+      <div class="detail-row"><span class="detail-key">Created</span><span class="detail-val">${new Date(t.created_at).toLocaleString()}</span></div>
+      <div class="detail-row"><span class="detail-key">Category</span><span class="detail-val">${escHtml(t.issue_category)}</span></div>
+      <div class="detail-row"><span class="detail-key">Priority</span><span class="detail-val">${t.priority}</span></div>
+    </div>
+    ${t.resolution_notes ? `
+    <div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:10px;padding:14px 16px;margin-top:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Resolution Notes</div>
+      <p style="font-size:13px;color:var(--text2);line-height:1.6">${escHtml(t.resolution_notes)}</p>
+    </div>` : ''}
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="closeModal()">Close</button>
+      <button class="btn btn-primary" style="flex:2;justify-content:center" onclick="closeModal();editTicket(${t.ticket_id})">Edit Ticket</button>
+    </div>
+  `);
+}
+
+// ── Edit Ticket ──────────────────────────────────────────────────────────
+async function editTicket(id) {
+  let t;
+  try { t = await getTicket(id); } catch(e) { return; }
+  openModal(`Edit #${t.ticket_id}`, `
+    ${createFormHTML(t)}
+    <div class="form-grid" style="margin-top:4px">
+      <div class="form-field">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="f-status">
+          ${['Open','In Progress','Resolved','Closed'].map(s=>`<option${s===t.status?' selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Resolution Notes</label>
+      <textarea class="form-textarea" id="f-res" placeholder="Add resolution details...">${escHtml(t.resolution_notes||'')}</textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitUpdate(${t.ticket_id})">Save Changes</button>
+    </div>
+  `);
+}
+
+async function submitUpdate(id) {
+  const data = validateForm();
+  if (!data) return;
+  data.status           = document.getElementById('f-status')?.value || 'Open';
+  data.resolution_notes = document.getElementById('f-res')?.value || '';
+  try {
+    await updateTicket(id, data);
+    closeModal();
+    showToast('✓ Ticket updated!', 'blue');
+    if (currentPage === 'dashboard') renderDashboard();
+    else if (currentPage === 'tickets') renderTickets();
+    else if (currentPage === 'search') renderSearch();
+  } catch(e) {}
+}
+
+// ── Delete ───────────────────────────────────────────────────────────────
+function confirmDelete(id) {
+  openModal('Delete Ticket', `
+    <div style="text-align:center;padding:16px 0 24px">
+      <div style="font-size:42px;margin-bottom:14px">🗑️</div>
+      <h3 style="font-size:17px;margin-bottom:8px">Delete Ticket #${id}?</h3>
+      <p style="color:var(--text2);font-size:13.5px;line-height:1.6">This action cannot be undone.</p>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" style="justify-content:center" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-danger" style="justify-content:center;flex:2" onclick="doDelete(${id})">Yes, Delete</button>
+    </div>
+  `);
+}
+
+async function doDelete(id) {
+  try {
+    await deleteTicket(id);
+    closeModal();
+    showToast('Ticket deleted', 'red');
+    if (currentPage === 'dashboard') renderDashboard();
+    else if (currentPage === 'tickets') renderTickets();
+    else renderSearch();
+  } catch(e) {}
+}
+
+// ── Boot ─────────────────────────────────────────────────────────────────
+navigate('dashboard');
+</script>
+</body>
+</html>

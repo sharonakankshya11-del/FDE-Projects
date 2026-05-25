@@ -1,0 +1,51 @@
+book_id,title,author,category,isbn,availability_status
+1,The Great Gatsby,F. Scott Fitzgerald,Fiction,978-0-7432-7356-5,available
+2,To Kill a Mockingbird,Harper Lee,Fiction,978-0-06-112008-4,available
+3,1984,George Orwell,Fiction,978-0-45-228285-3,available
+4,Pride and Prejudice,Jane Austen,Fiction,978-0-14-143951-8,available
+5,The Alchemist,Paulo Coelho,Fiction,978-0-06-231500-7,available
+6,Brave New World,Aldous Huxley,Fiction,978-0-06-085052-4,available
+7,Of Mice and Men,John Steinbeck,Fiction,978-0-14-028726-3,available
+8,The Catcher in the Rye,J.D. Salinger,Fiction,978-0-31-676948-0,available
+9,The Road,Cormac McCarthy,Fiction,978-0-30-726543-1,available
+10,Beloved,Toni Morrison,Fiction,978-1-40-031218-7,available
+11,Clean Code,Robert C. Martin,Technology,978-0-13-235088-4,available
+12,The Pragmatic Programmer,Andrew Hunt,Technology,978-0-20-161622-4,available
+13,Design Patterns,Gang of Four,Technology,978-0-20-163361-0,available
+14,Introduction to Algorithms,Thomas H. Cormen,Technology,978-0-26-203293-3,available
+15,The Art of Computer Programming,Donald Knuth,Technology,978-0-20-175104-0,available
+16,Structure and Interpretation of Computer Programs,Harold Abelson,Technology,978-0-26-251087-5,available
+17,Code Complete,Steve McConnell,Technology,978-0-73-561967-8,available
+18,Refactoring,Martin Fowler,Technology,978-0-20-148567-7,available
+19,The Mythical Man-Month,Frederick Brooks,Technology,978-0-20-183595-3,available
+20,You Dont Know JS,Kyle Simpson,Technology,978-1-49-194041-5,available
+21,A Brief History of Time,Stephen Hawking,Science,978-0-55-338016-3,available
+22,The Selfish Gene,Richard Dawkins,Science,978-0-19-286092-7,available
+23,Cosmos,Carl Sagan,Science,978-0-34-539338-1,available
+24,The Origin of Species,Charles Darwin,Science,978-0-14-043205-3,available
+25,Thinking Fast and Slow,Daniel Kahneman,Science,978-0-37-427563-1,available
+26,The Double Helix,James Watson,Science,978-0-74-322629-2,available
+27,Sapiens,Yuval Noah Harari,Science,978-0-06-231609-7,available
+28,Homo Deus,Yuval Noah Harari,Science,978-0-06-246431-6,available
+29,Guns Germs and Steel,Jared Diamond,History,978-0-39-331755-8,available
+30,The Rise and Fall of the Third Reich,William Shirer,History,978-0-67-172868-7,available
+31,A Peoples History of the United States,Howard Zinn,History,978-0-06-083792-7,available
+32,The Silk Roads,Peter Frankopan,History,978-1-10-190422-1,available
+33,SPQR,Mary Beard,History,978-1-46-795982-4,available
+34,Steve Jobs,Walter Isaacson,Biography,978-1-45-161797-8,available
+35,The Diary of a Young Girl,Anne Frank,Biography,978-0-55-315489-5,available
+36,Long Walk to Freedom,Nelson Mandela,Biography,978-0-31-610771-7,available
+37,Einstein His Life and Universe,Walter Isaacson,Biography,978-0-74-327381-0,available
+38,Leonardo da Vinci,Walter Isaacson,Biography,978-1-50-114289-8,available
+39,Atomic Habits,James Clear,Self-Help,978-0-73-521129-2,available
+40,The 7 Habits of Highly Effective People,Stephen Covey,Self-Help,978-1-45-162901-8,available
+41,How to Win Friends and Influence People,Dale Carnegie,Self-Help,978-0-67-142517-6,available
+42,Mans Search for Meaning,Viktor Frankl,Self-Help,978-0-80-706996-7,available
+43,Deep Work,Cal Newport,Self-Help,978-1-45-554128-8,available
+44,The Girl with the Dragon Tattoo,Stieg Larsson,Mystery,978-0-30-726975-4,available
+45,Gone Girl,Gillian Flynn,Mystery,978-0-30-758836-4,available
+46,The Da Vinci Code,Dan Brown,Mystery,978-0-38-550420-5,available
+47,Murder on the Orient Express,Agatha Christie,Mystery,978-0-06-207350-5,available
+48,The Name of the Rose,Umberto Eco,Mystery,978-0-15-144647-6,available
+49,Outliers,Malcolm Gladwell,Non-Fiction,978-0-31-617138-7,available
+50,The Tipping Point,Malcolm Gladwell,Non-Fiction,978-0-31-634632-7,available

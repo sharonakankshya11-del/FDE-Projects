@@ -191,3 +191,142 @@ body {
   .navbar { padding: 0 1rem; }
   .stat-value { font-size: 1.8rem; }
 }
+
+/* ════════════════════════════════════════════════════════════
+   ANALYTICS DASHBOARD  (Phase 2)
+   ════════════════════════════════════════════════════════════ */
+
+/* Page wrapper */
+.analytics-page { display: flex; flex-direction: column; gap: 1.5rem; }
+.analytics-loading { text-align: center; padding: 3rem; color: #718096; font-size: 1.1rem; }
+.page-title { font-size: 1.6rem; font-weight: 700; color: #1e3a5f; margin: 0; }
+
+/* ── ETL Status Banner ───────────────────────────────────── */
+.etl-banner {
+  display: flex; align-items: flex-start; gap: .75rem;
+  padding: .85rem 1.2rem; border-radius: 10px;
+  font-size: .88rem; line-height: 1.5;
+}
+.etl-success { background: #ecfdf5; border: 1px solid #6ee7b7; color: #065f46; }
+.etl-pending { background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; }
+.etl-icon    { font-size: 1.1rem; margin-top: 1px; }
+.etl-info    { flex: 1; }
+
+/* ── KPI Summary Cards ───────────────────────────────────── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+.kpi-card {
+  border-radius: 12px; padding: 1.2rem 1rem;
+  display: flex; flex-direction: column; align-items: center;
+  gap: .3rem; box-shadow: 0 2px 8px rgba(0,0,0,.07);
+  transition: transform .15s;
+}
+.kpi-card:hover { transform: translateY(-2px); }
+.kpi-value { font-size: 2rem; font-weight: 800; line-height: 1; }
+.kpi-label { font-size: .78rem; font-weight: 600; text-transform: uppercase;
+             letter-spacing: .04em; text-align: center; opacity: .8; }
+
+.kpi-blue   { background: linear-gradient(135deg,#eff6ff,#dbeafe); color: #1e40af; }
+.kpi-green  { background: linear-gradient(135deg,#f0fdf4,#dcfce7); color: #166534; }
+.kpi-red    { background: linear-gradient(135deg,#fff1f2,#ffe4e6); color: #9f1239; }
+.kpi-purple { background: linear-gradient(135deg,#faf5ff,#ede9fe); color: #6b21a8; }
+.kpi-orange { background: linear-gradient(135deg,#fff7ed,#ffedd5); color: #9a3412; }
+.kpi-teal   { background: linear-gradient(135deg,#f0fdfa,#ccfbf1); color: #115e59; }
+
+/* ── Chart Cards ─────────────────────────────────────────── */
+.analytics-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem;
+}
+.chart-card {
+  background: #fff; border-radius: 12px; padding: 1.4rem 1.6rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,.07);
+}
+.chart-full { grid-column: 1 / -1; }
+.chart-title {
+  font-size: 1.05rem; font-weight: 700; color: #1e3a5f;
+  margin: 0 0 1.2rem; display: flex; align-items: center; gap: .5rem;
+}
+
+/* ── Horizontal Bar List ─────────────────────────────────── */
+.hbar-list  { display: flex; flex-direction: column; gap: .85rem; }
+.hbar-row   { display: flex; align-items: center; gap: .75rem; }
+.hbar-rank  { width: 1.8rem; font-size: .8rem; font-weight: 700; color: #94a3b8;
+              text-align: center; flex-shrink: 0; }
+.cat-dot    { width: .75rem; height: .75rem; border-radius: 50%; flex-shrink: 0; }
+.hbar-info  { flex: 1; min-width: 0; }
+.hbar-label { font-size: .85rem; font-weight: 600; color: #1e293b;
+              white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hbar-meta  { font-size: .75rem; color: #94a3b8; margin-bottom: .2rem; }
+.hbar-track { background: #f1f5f9; border-radius: 999px; height: 8px; overflow: hidden; }
+.hbar-fill  { height: 100%; border-radius: 999px;
+              transition: width .6s cubic-bezier(.4,0,.2,1); }
+.hbar-count { font-size: .85rem; font-weight: 700; color: #475569;
+              width: 2rem; text-align: right; flex-shrink: 0; }
+
+/* ── Category Legend ─────────────────────────────────────── */
+.cat-legend { display: flex; flex-wrap: wrap; gap: .4rem .9rem;
+              margin-top: 1rem; padding-top: .8rem;
+              border-top: 1px solid #f1f5f9; }
+.cat-swatch { display: flex; align-items: center; gap: .3rem;
+              font-size: .75rem; color: #64748b; }
+.cat-swatch span { width: .65rem; height: .65rem; border-radius: 50%;
+                   display: inline-block; }
+
+/* ── Vertical Bar Chart (Monthly Trends) ─────────────────── */
+.vbar-chart {
+  display: flex; align-items: flex-end; gap: .5rem;
+  height: 200px; padding-bottom: 2rem; overflow-x: auto;
+  border-bottom: 2px solid #e2e8f0; padding-top: .5rem;
+}
+.vbar-group { display: flex; flex-direction: column; align-items: center;
+              flex-shrink: 0; width: 52px; }
+.vbar-bars  { display: flex; align-items: flex-end; gap: 3px; height: 140px; }
+.vbar-wrapper { display: flex; align-items: flex-end; height: 140px; }
+.vbar {
+  width: 14px; border-radius: 4px 4px 0 0;
+  transition: height .5s cubic-bezier(.4,0,.2,1);
+  min-height: 2px;
+}
+.borrow-bar { background: #6366f1; }
+.return-bar { background: #10b981; }
+.vbar-counts { display: flex; gap: 2px; font-size: .62rem; color: #94a3b8; margin-top: 2px; }
+.bc { color: #6366f1; font-weight: 600; }
+.rc { color: #10b981; font-weight: 600; }
+.vbar-label { font-size: .68rem; color: #94a3b8; margin-top: 4px; text-align: center;
+              white-space: nowrap; }
+.vbar-legend { display: flex; gap: 1.2rem; margin-top: .8rem; }
+.vbar-legend span { display: flex; align-items: center; gap: .3rem;
+                    font-size: .8rem; color: #475569; }
+.legend-dot { width: .7rem; height: .7rem; border-radius: 50%; display: inline-block; }
+
+/* ── Overdue Table ───────────────────────────────────────── */
+.overdue-badge {
+  margin-left: .5rem; background: #fecaca; color: #991b1b;
+  font-size: .75rem; font-weight: 700;
+  padding: .1rem .5rem; border-radius: 999px;
+}
+.overdue-row { background: #fff7f7; }
+.overdue-row:hover { background: #ffeded; }
+.days-badge { padding: .2rem .55rem; border-radius: 999px;
+              font-size: .78rem; font-weight: 600; }
+.badge-overdue { background: #fca5a5; color: #7f1d1d;
+                 padding: .2rem .6rem; border-radius: 999px;
+                 font-size: .78rem; font-weight: 600; }
+.no-overdue { display: flex; flex-direction: column; align-items: center;
+              gap: .5rem; padding: 2rem; color: #10b981; }
+.no-overdue-icon { font-size: 2.5rem; }
+.no-overdue p    { font-weight: 600; color: #065f46; }
+
+.no-data { color: #94a3b8; font-style: italic; padding: 1rem 0; }
+.table-wrapper { overflow-x: auto; }
+
+/* ── Responsive tweaks ───────────────────────────────────── */
+@media (max-width: 640px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .analytics-row { grid-template-columns: 1fr; }
+  .vbar-chart { gap: .25rem; }
+  .vbar-group { width: 44px; }
+}

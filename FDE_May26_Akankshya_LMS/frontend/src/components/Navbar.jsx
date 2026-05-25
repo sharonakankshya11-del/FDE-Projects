@@ -1,11 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 
 const NAV_LINKS = [
-  { to: "/", label: "Dashboard" },
-  { to: "/books", label: "Books" },
-  { to: "/borrowers", label: "Borrowers" },
+  { to: "/",             label: "Dashboard"    },
+  { to: "/books",        label: "Books"        },
+  { to: "/borrowers",    label: "Borrowers"    },
   { to: "/transactions", label: "Borrow / Return" },
-  { to: "/search", label: "Search" },
+  { to: "/search",       label: "Search"       },
+  { to: "/analytics",    label: "📊 Analytics"  },
 ];
 
 export default function Navbar() {

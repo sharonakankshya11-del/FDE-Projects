@@ -1,9 +1,10 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 
-# Book Schemas
+# ── Book Schemas ───────────────────────────────────────────────────────────────
+
 class BookBase(BaseModel):
     title: str
     author: str
@@ -31,7 +32,8 @@ class BookResponse(BookBase):
         from_attributes = True
 
 
-# Borrower Schemas
+# ── Borrower Schemas ───────────────────────────────────────────────────────────
+
 class BorrowerBase(BaseModel):
     borrower_name: str
     email: str
@@ -55,7 +57,8 @@ class BorrowerResponse(BorrowerBase):
         from_attributes = True
 
 
-# Transaction Schemas
+# ── Transaction Schemas ────────────────────────────────────────────────────────
+
 class BorrowRequest(BaseModel):
     book_id: int
     borrower_id: int
@@ -76,3 +79,53 @@ class TransactionResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# ── Analytics Schemas (Phase 2) ────────────────────────────────────────────────
+
+class MostBorrowedBook(BaseModel):
+    book_id: int
+    title: str
+    author: str
+    category: str
+    borrow_count: int
+
+
+class CategoryStat(BaseModel):
+    category: str
+    borrow_count: int
+    unique_books: int
+
+
+class MonthlyTrend(BaseModel):
+    month: str          # "YYYY-MM"
+    borrow_count: int
+    return_count: int
+
+
+class OverdueTransaction(BaseModel):
+    transaction_id: int
+    book_id: int
+    book_title: str
+    borrower_id: int
+    borrower_name: str
+    borrow_date: str    # ISO string
+    days_overdue: int
+
+
+class AnalyticsSummary(BaseModel):
+    total_transactions: int
+    active_borrows: int
+    overdue_count: int
+    returned_count: int
+    avg_borrow_duration_days: float
+    most_popular_category: str
+
+
+class ETLStatus(BaseModel):
+    status: str
+    last_run: Optional[str] = None
+    books_loaded: int = 0
+    borrowers_loaded: int = 0
+    transactions_loaded: int = 0
+    duration_seconds: Optional[float] = None

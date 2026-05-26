@@ -1,0 +1,53 @@
+Introduction to Transformer Architecture
+
+Transformers are a type of deep learning model introduced in the paper "Attention is All You Need" (Vaswani et al., 2017). They have become the foundation of modern NLP models like GPT and BERT.
+
+Core Components:
+
+1. Self-Attention Mechanism
+The self-attention mechanism allows the model to weigh the importance of different words in a sequence when encoding a particular word. It computes three vectors for each input token: Query (Q), Key (K), and Value (V). The attention score is computed as: Attention(Q,K,V) = softmax(QK^T / sqrt(d_k)) * V
+
+2. Multi-Head Attention
+Instead of performing a single attention function, transformers use multiple attention heads in parallel. This allows the model to attend to information from different representation subspaces.
+
+3. Positional Encoding
+Since transformers have no inherent notion of order, positional encodings are added to input embeddings to give the model information about the position of tokens in the sequence.
+
+4. Feed-Forward Networks
+Each layer contains a fully connected feed-forward network applied to each position. This consists of two linear transformations with a ReLU activation: FFN(x) = max(0, xW1 + b1)W2 + b2
+
+5. Layer Normalization and Residual Connections
+Each sub-layer (attention, feed-forward) uses residual connections followed by layer normalization to stabilize training.
+
+Multi-Agent Systems:
+
+A multi-agent system consists of multiple autonomous agents that interact with each other to solve problems that are beyond the capacity of a single agent. Key concepts include:
+
+- Agent: An autonomous entity that perceives its environment and takes actions.
+- Orchestration: Coordinating agents to work towards a common goal.
+- Supervisor Pattern: A central agent that delegates tasks to specialized sub-agents.
+- Parallel Execution: Multiple agents working simultaneously on different tasks.
+- Sequential Pipeline: Agents passing results to the next in a chain.
+
+RAG (Retrieval-Augmented Generation):
+
+RAG combines retrieval systems with language models. The process:
+1. Index documents in a vector database
+2. Convert user query to embedding
+3. Retrieve similar documents
+4. Provide retrieved context to LLM
+5. Generate grounded response
+
+Advantages of RAG:
+- Reduces hallucination by grounding responses in real documents
+- Allows knowledge updates without retraining the model
+- Provides source attribution
+
+LangGraph:
+
+LangGraph is a library for building stateful, multi-agent applications using directed graphs. Key features:
+- StateGraph: Define shared state across all nodes
+- Nodes: Python functions that modify state
+- Edges: Conditional routing between nodes
+- Cycles: Support for loops and self-correction workflows
+- Memory: Persistent state across conversation turns

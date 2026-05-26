@@ -1,0 +1,33 @@
+# Environment variables — NEVER commit secrets
+.env
+*.env
+
+# Python virtual environment
+venv/
+env/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# ChromaDB / vector store (auto-generated)
+data/chroma_db/
+
+# Logs (auto-generated)
+data/logs/
+
+# Database files
+*.db
+*.sqlite3
+
+# macOS metadata
+.DS_Store
+Thumbs.db
+
+# Egg / build artifacts
+*.egg-info/
+dist/
+build/

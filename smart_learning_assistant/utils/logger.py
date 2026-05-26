@@ -19,7 +19,7 @@ from rich.console import Console
 
 console = Console()
 
-LOG_DIR = Path("./data/logs")
+LOG_DIR = Path(__file__).resolve().parent.parent / "data" / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 ANALYTICS_FILE = LOG_DIR / "analytics.jsonl"

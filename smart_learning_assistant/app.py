@@ -495,12 +495,15 @@ with tab_eval:
 
     REPORT_PATH = os.path.join(os.path.dirname(__file__), "data/logs/eval_report.json")
 
-    if not os.path.exists(REPORT_PATH):
+    # Ensure the logs directory exists (creates it if missing, e.g. on first deploy)
+    os.makedirs(os.path.dirname(REPORT_PATH), exist_ok=True)
+
+    try:
+        with open(REPORT_PATH) as f:
+            report = json.load(f)
+    except FileNotFoundError:
         st.warning("⚠️ No evaluation report found. Run `python run_eval_report.py` first.")
         st.stop()
-
-    with open(REPORT_PATH) as f:
-        report = json.load(f)
 
     # ── Aggregate stats ───────────────────────────────────────────────────────
     total       = len(report)

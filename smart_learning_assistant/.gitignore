@@ -16,8 +16,10 @@ __pycache__/
 # ChromaDB / vector store (auto-generated)
 data/chroma_db/
 
-# Logs (auto-generated)
-data/logs/
+# Logs (auto-generated) — keep directory, ignore generated files
+data/logs/*.log
+data/logs/*.jsonl
+data/logs/*.json
 
 # Database files
 *.db

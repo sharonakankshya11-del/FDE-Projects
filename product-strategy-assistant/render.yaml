@@ -3,11 +3,14 @@ services:
     name: product-strategy-assistant
     runtime: python
     plan: free
+    rootDir: product-strategy-assistant
     buildCommand: pip install -r requirements.txt
     startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0
     envVars:
       - key: OPENAI_API_KEY
         sync: false
+      - key: OPENAI_BASE_URL
+        value: https://keygateway.arshnivlabs.com/v1
       - key: LLM_MODEL
         value: gpt-4o-mini
       - key: EMBEDDING_MODEL

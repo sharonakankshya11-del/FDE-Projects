@@ -1,0 +1,42 @@
+{
+  "folders": [
+    { "name": "Backend", "path": "./backend" },
+    { "name": "Frontend", "path": "./frontend" }
+  ],
+  "settings": {
+    "python.defaultInterpreterPath": "./backend/venv/bin/python",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "files.exclude": { "**/__pycache__": true, "**/node_modules": true }
+  },
+  "launch": {
+    "configurations": [
+      {
+        "name": "FastAPI Backend",
+        "type": "python",
+        "request": "launch",
+        "module": "uvicorn",
+        "args": ["main:app", "--reload", "--port", "8000"],
+        "cwd": "${workspaceFolder:Backend}",
+        "env": { "ANTHROPIC_API_KEY": "${env:ANTHROPIC_API_KEY}" }
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Start Backend",
+        "type": "shell",
+        "command": "cd backend && uvicorn main:app --reload --port 8000",
+        "group": "build"
+      },
+      {
+        "label": "Start Frontend",
+        "type": "shell",
+        "command": "cd frontend && npm start",
+        "group": "build"
+      }
+    ]
+  }
+}

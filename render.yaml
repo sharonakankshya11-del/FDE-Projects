@@ -3,9 +3,8 @@ services:
     name: product-strategy-assistant
     runtime: python
     plan: free
-    rootDir: product-strategy-assistant
-    buildCommand: pip install -r requirements.txt
-    startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0
+    buildCommand: pip install -r product-strategy-assistant/requirements.txt
+    startCommand: streamlit run product-strategy-assistant/app.py --server.port $PORT --server.address 0.0.0.0
     envVars:
       - key: OPENAI_API_KEY
         sync: false
@@ -15,5 +14,3 @@ services:
         value: gpt-4o-mini
       - key: EMBEDDING_MODEL
         value: text-embedding-3-small
-      - key: PYTHON_VERSION
-        value: 3.11.9

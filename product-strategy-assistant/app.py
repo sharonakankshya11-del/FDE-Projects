@@ -108,6 +108,8 @@ if ss.ingested is None:
 
 
 data = ss.ingested
+if data is None:
+    st.stop()
 summary = data.structured_summary
 
 tab_dash, tab_run, tab_reports, tab_chat = st.tabs(

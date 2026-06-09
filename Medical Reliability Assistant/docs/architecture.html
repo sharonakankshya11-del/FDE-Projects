@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Architecture — DR. BLEEP · Medical Equipment Reliability Intelligence</title>
+<style>
+  :root {
+    --bg:      #0d1117;
+    --card:    #161b22;
+    --card2:   #0f1419;
+    --border:  #21262d;
+    --text:    #e6edf3;
+    --muted:   #7d8590;
+    --arrow:   #30363d;
+
+    --blue:   #388bfd;
+    --teal:   #22d3ee;
+    --green:  #3fb950;
+    --amber:  #d29922;
+    --red:    #f85149;
+    --purple: #a371f7;
+    --indigo: #818cf8;
+    --forest: #4a9070;
+    --olive:  #56a36a;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh; padding: 2rem;
+    font-size: 13px; line-height: 1.5;
+  }
+
+  /* ── Header ──────────────────────────────────────────── */
+  .page-header {
+    text-align: center; margin-bottom: 2.5rem;
+  }
+  .brand {
+    display: inline-flex; align-items: center; gap: 12px;
+    margin-bottom: 8px;
+  }
+  .brand-mark {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: #2d4a3a; display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .brand-mark svg { display: block; }
+  .brand-name {
+    font-size: 1.7rem; font-weight: 800; letter-spacing: -0.03em;
+    color: #e6edf3;
+  }
+  .brand-name span { color: var(--forest); }
+  .page-subtitle { color: var(--muted); font-size: 0.8rem; margin-top: 4px; }
+  .version-pill {
+    display: inline-block; background: #21262d; border: 1px solid #30363d;
+    color: var(--muted); font-size: 0.68rem; padding: 2px 10px; border-radius: 20px;
+    margin-top: 8px;
+  }
+
+  /* ── Wrapper ─────────────────────────────────────────── */
+  .arch { max-width: 1140px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.4rem; }
+
+  /* ── Section card ────────────────────────────────────── */
+  .section {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.1rem 1.3rem;
+  }
+  .section.b-blue   { border-color: #388bfd40; }
+  .section.b-teal   { border-color: #22d3ee40; }
+  .section.b-green  { border-color: #3fb95040; }
+  .section.b-amber  { border-color: #d2992240; }
+  .section.b-red    { border-color: #f8514940; }
+  .section.b-purple { border-color: #a371f740; }
+  .section.b-indigo { border-color: #818cf840; }
+  .section.b-forest { border-color: #4a907040; }
+
+  .sec-title {
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── Chips ───────────────────────────────────────────── */
+  .chip-row { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+  .chip {
+    font-size: 0.68rem; padding: 0.25rem 0.6rem; border-radius: 6px;
+    font-weight: 500; white-space: nowrap;
+  }
+  .chip.blue   { background: #388bfd15; color: #79c0ff; border: 1px solid #388bfd30; }
+  .chip.teal   { background: #22d3ee15; color: #67e8f9; border: 1px solid #22d3ee30; }
+  .chip.green  { background: #3fb95015; color: #56d364; border: 1px solid #3fb95030; }
+  .chip.amber  { background: #d2992215; color: #e3b341; border: 1px solid #d2992230; }
+  .chip.red    { background: #f8514915; color: #ff7b72; border: 1px solid #f8514930; }
+  .chip.purple { background: #a371f715; color: #d2a8ff; border: 1px solid #a371f730; }
+  .chip.forest { background: #4a907015; color: #7dd3b8; border: 1px solid #4a907030; }
+  .chip.gray   { background: #30363d40; color: var(--muted); border: 1px solid #30363d; }
+
+  /* ── Badge ───────────────────────────────────────────── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: #21262d; border: 1px solid #30363d;
+    border-radius: 6px; padding: 2px 8px;
+    font-size: 0.62rem; color: #8b949e; font-weight: 600;
+  }
+  .badge.port { color: #79c0ff; border-color: #388bfd30; background: #388bfd10; }
+
+  /* ── Arrow ───────────────────────────────────────────── */
+  .arrow { display: flex; justify-content: center; color: #30363d; font-size: 1rem; }
+
+  /* ── 2-col layout ────────────────────────────────────── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+  .four-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
+  .five-col { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.65rem; }
+
+  /* ── Mini card ───────────────────────────────────────── */
+  .mini-card {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 9px; padding: 0.8rem 0.9rem;
+  }
+  .mini-title {
+    font-size: 0.72rem; font-weight: 700;
+    display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.4rem;
+  }
+  .mini-body { font-size: 0.65rem; color: var(--muted); line-height: 1.55; }
+  .mini-body li { list-style: none; display: flex; align-items: flex-start; gap: 0.3rem; padding: 0.1rem 0; }
+  .mini-body li::before { content: '·'; flex-shrink: 0; }
+
+  /* ── Flow steps ──────────────────────────────────────── */
+  .flow { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+  .step {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 7px; padding: 0.4rem 0.7rem;
+    font-size: 0.67rem; white-space: nowrap;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .step span { font-size: 0.6rem; color: var(--muted); }
+  .fa { color: var(--arrow); font-size: 0.85rem; flex-shrink: 0; }
+
+  /* ── HITL card ───────────────────────────────────────── */
+  .hitl {
+    background: var(--card2); border: 1px solid #d2992240;
+    border-radius: 9px; padding: 0.85rem 1rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    margin-top: 0.9rem;
+  }
+  .hitl-title { font-size: 0.73rem; font-weight: 700; color: #e3b341; margin-bottom: 2px; }
+  .hitl-sub { font-size: 0.62rem; color: var(--muted); }
+  .hitl-btns { display: flex; gap: 0.4rem; }
+  .hbtn { padding: 0.25rem 0.6rem; border-radius: 5px; font-size: 0.65rem; font-weight: 600; border: none; cursor: default; }
+  .hbtn.ok  { background: #3fb95020; color: #56d364; border: 1px solid #3fb95040; }
+  .hbtn.ed  { background: #388bfd20; color: #79c0ff; border: 1px solid #388bfd40; }
+  .hbtn.rej { background: #f8514920; color: #ff7b72; border: 1px solid #f8514940; }
+
+  /* ── Eval metrics ────────────────────────────────────── */
+  .eval-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+  .em {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 7px; padding: 0.5rem 0.75rem; font-size: 0.63rem; color: var(--muted);
+  }
+  .em strong { display: block; color: var(--text); font-size: 0.68rem; margin-bottom: 2px; }
+
+  /* ── Legend ──────────────────────────────────────────── */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;
+    margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+  }
+  .li { display: flex; align-items: center; gap: 5px; font-size: 0.68rem; color: var(--muted); }
+
+  /* ── Stat pill ───────────────────────────────────────── */
+  .stat-row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.7rem; }
+  .stat {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 7px; padding: 0.35rem 0.75rem;
+    font-size: 0.63rem; color: var(--muted);
+  }
+  .stat strong { color: var(--text); font-weight: 700; }
+
+  /* ── NEW badge ───────────────────────────────────────── */
+  .new-tag {
+    display: inline-block; background: #3fb95020;
+    border: 1px solid #3fb95050; color: #56d364;
+    font-size: 0.58rem; font-weight: 700; padding: 1px 6px;
+    border-radius: 4px; margin-left: 4px; vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────── -->
+<div class="page-header">
+  <div class="brand">
+    <div class="brand-mark">
+      <svg width="32" height="32" viewBox="0 0 44 44" fill="none">
+        <circle cx="22" cy="22" r="22" fill="#2d4a3a"/>
+        <circle cx="22" cy="22" r="19" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <polyline points="2,22 8,22 10.5,11 13.5,33 16.5,11 19.5,33 22,22 42,22"
+          fill="none" stroke="#4a9070" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="22" cy="22" r="2.2" fill="#fff"/>
+      </svg>
+    </div>
+    <div class="brand-name">DR<span>.</span>BLEEP</div>
+  </div>
+  <div class="page-subtitle">Medical Equipment Reliability Intelligence · System Architecture</div>
+  <div class="version-pill">v1.0.0 · Multi-Agent RAG Pipeline · Pinecone + LangGraph</div>
+</div>
+
+<div class="arch">
+
+  <!-- ── FRONTEND ───────────────────────────────────────── -->
+  <div class="section b-blue">
+    <div class="sec-title">
+      <span class="dot" style="background:var(--blue)"></span>
+      Frontend — React 18 / Vite 6
+      <span class="badge port">:5173</span>
+      <span class="badge">Catamaran + Source Sans 3 · Forest Green theme</span>
+    </div>
+
+    <div class="two-col">
+      <!-- Pages -->
+      <div>
+        <div style="font-size:0.65rem;font-weight:700;color:var(--muted);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.08em">Pages / Tabs</div>
+        <div class="chip-row">
+          <span class="chip blue">🏠 HomePage <span class="new-tag">NEW</span></span>
+          <span class="chip blue">💬 Query Assistant</span>
+          <span class="chip blue">📊 Device Health</span>
+          <span class="chip blue">ℹ About Me (Tech Stack) <span class="new-tag">NEW</span></span>
+          <span class="chip blue">📧 Contact <span class="new-tag">NEW</span></span>
+          <span class="chip blue">🆘 Support + FAQ <span class="new-tag">NEW</span></span>
+          <span class="chip blue">🔐 Login Modal <span class="new-tag">NEW</span></span>
+        </div>
+      </div>
+      <!-- Components -->
+      <div>
+        <div style="font-size:0.65rem;font-weight:700;color:var(--muted);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.08em">Key Components</div>
+        <div class="chip-row">
+          <span class="chip gray">ChatInterface</span>
+          <span class="chip gray">RecommendationRenderer <span class="new-tag">NEW</span></span>
+          <span class="chip gray">ReportCard <span class="new-tag">NEW</span></span>
+          <span class="chip gray">IncidentCard</span>
+          <span class="chip gray">HumanReviewPanel</span>
+          <span class="chip gray">DeviceHealthDashboard</span>
+          <span class="chip gray">EvalMetricsPanel</span>
+          <span class="chip gray">LogoMark / LogoFull / LogoHero <span class="new-tag">NEW</span></span>
+          <span class="chip gray">TechStack</span>
+          <span class="chip gray">Recharts · Lucide React</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-row" style="margin-top:0.9rem">
+      <div class="stat">Nav: <strong>Horizontal tabs</strong> — primary left · Contact &amp; Support right</div>
+      <div class="stat">Header: <strong>DR.BLEEP logo</strong> + Sign In button (modal)</div>
+      <div class="stat">Recommendation output: <strong>Markdown → styled section cards</strong></div>
+      <div class="stat">Agent log: <strong>Timeline with per-agent icons</strong></div>
+    </div>
+  </div>
+
+  <div class="arrow">↕ HTTP / JSON &nbsp; /api/*</div>
+
+  <!-- ── FASTAPI ─────────────────────────────────────────── -->
+  <div class="section b-indigo">
+    <div class="sec-title">
+      <span class="dot" style="background:var(--indigo)"></span>
+      FastAPI Backend — Python 3.11 · Uvicorn · Pydantic v2
+      <span class="badge port">:8000</span>
+      <span class="badge">/docs &nbsp; /health &nbsp; /techstack &nbsp; /architecture</span>
+    </div>
+
+    <!-- Middleware -->
+    <div class="three-col" style="margin-bottom:0.9rem">
+      <div class="mini-card">
+        <div class="mini-title" style="color:#d2a8ff">🛡 PII Middleware</div>
+        <div class="mini-body">Strips names, MRN, phone, email, SSN<br/>from all POST /api/* requests &amp; responses<br/>via custom PIIMiddleware</div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-title" style="color:#67e8f9">🔍 Input Guardrail</div>
+        <div class="mini-body">Length check · injection detection<br/>Off-topic classifier (GPT-4o-mini)<br/>Fail-open on LLM error</div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-title" style="color:#ff7b72">⚠ Output Guardrail</div>
+        <div class="mini-body">Hallucination filter (GPT-4o-mini)<br/>Medical safety classification<br/>Routes unsafe output → HITL</div>
+      </div>
+    </div>
+
+    <!-- API Routes -->
+    <div class="chip-row" style="margin-bottom:0.9rem">
+      <span class="chip gray">POST /api/query</span>
+      <span class="chip gray">POST /api/search</span>
+      <span class="chip gray">POST /api/review (HITL)</span>
+      <span class="chip gray">GET /api/health</span>
+      <span class="chip gray">GET /api/device-stats</span>
+      <span class="chip gray">POST /api/evaluate</span>
+    </div>
+
+    <!-- LangGraph Supervisor -->
+    <div class="section b-purple" style="padding:1rem 1.1rem">
+      <div class="sec-title">
+        <span class="dot" style="background:var(--purple)"></span>
+        LangGraph Hierarchical Supervisor — StateGraph
+        <span class="badge">SQLite checkpoints · ./checkpoints.db</span>
+        <span class="badge">Session resume via thread_id</span>
+      </div>
+
+      <div class="four-col">
+        <div class="mini-card">
+          <div class="mini-title" style="color:#67e8f9">🔎 Retrieval Agent</div>
+          <ul class="mini-body">
+            <li>Embed query (text-embedding-3-small)</li>
+            <li>Pinecone vector search (top-20)</li>
+            <li>BM25 keyword search (in-memory)</li>
+            <li>RRF fusion k=60</li>
+            <li>Cross-encoder rerank → top-5</li>
+            <li>Equipment / unit / severity filters</li>
+          </ul>
+        </div>
+        <div class="mini-card">
+          <div class="mini-title" style="color:#e3b341">📉 Analysis Agent</div>
+          <ul class="mini-body">
+            <li>Z-score anomaly detection</li>
+            <li>IQR fallback for skewed signals</li>
+            <li>Escalation trigger (≥2 high-sev)</li>
+            <li>GPT-4o-mini correlation summary</li>
+            <li>Failure probability estimate</li>
+          </ul>
+        </div>
+        <div class="mini-card">
+          <div class="mini-title" style="color:#56d364">🔧 Maintenance Agent</div>
+          <ul class="mini-body">
+            <li>Failure type distribution</li>
+            <li>Recurrence frequency analysis</li>
+            <li>Schedule adjustment advice</li>
+            <li>Equipment utilisation concern</li>
+            <li>GPT-4o-mini pattern summary</li>
+          </ul>
+        </div>
+        <div class="mini-card">
+          <div class="mini-title" style="color:#d2a8ff">💡 Recommendation Agent</div>
+          <ul class="mini-body">
+            <li>Root-cause synthesis</li>
+            <li>Immediate + preventive actions</li>
+            <li>Confidence score (0–100%)</li>
+            <li>Incident citations</li>
+            <li>Markdown structured output</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- HITL -->
+      <div class="hitl">
+        <div>
+          <div class="hitl-title">⏸ Human-in-the-Loop Review</div>
+          <div class="hitl-sub">Graph interrupts before final response · Engineer reviews via POST /api/review · State persisted in SQLite</div>
+        </div>
+        <div class="hitl-btns">
+          <span class="hbtn ok">✓ Approve</span>
+          <span class="hbtn ed">✏ Edit</span>
+          <span class="hbtn rej">✗ Reject</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DATA LAYER ──────────────────────────────────────── -->
+  <div class="section b-teal">
+    <div class="sec-title">
+      <span class="dot" style="background:var(--teal)"></span>
+      Data Layer — Vector Store + Keyword Index + Reranker
+    </div>
+    <div class="three-col">
+      <div class="mini-card">
+        <div class="mini-title" style="color:#67e8f9">📌 Pinecone Vector Index</div>
+        <div class="mini-body">
+          Vectors: <strong style="color:var(--text)">20,005</strong><br/>
+          Dimension: 1536 · Metric: cosine<br/>
+          Model: text-embedding-3-small<br/>
+          Index: medical-equipment · us-east-1<br/>
+          Batch upsert: 100 vectors/call<br/>
+          Warm-up: fetch 500 IDs at startup
+        </div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-title" style="color:#a5b4fc">🔠 BM25 (In-memory)</div>
+        <div class="mini-body">
+          rank_bm25 · BM25Okapi<br/>
+          20,005 documents at runtime<br/>
+          Rebuilt from Pinecone metadata on startup<br/>
+          Tokenised lowercase split<br/>
+          Fused with dense via RRF k=60
+        </div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-title" style="color:#e3b341">⚖ Cross-encoder Reranker</div>
+        <div class="mini-body">
+          ms-marco-MiniLM-L-6-v2<br/>
+          Scores query–doc relevance pairs<br/>
+          Input: top-20 RRF results<br/>
+          Output: top-5 ranked chunks<br/>
+          Rerank score exposed in UI
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── INGESTION ───────────────────────────────────────── -->
+  <div class="section b-green">
+    <div class="sec-title">
+      <span class="dot" style="background:var(--green)"></span>
+      Ingestion Pipeline — scripts/run_ingest.py
+      <span class="badge">20,005 vectors · ~12 min end-to-end</span>
+    </div>
+    <div class="flow">
+      <div class="step">📄 ai4i2020.csv<span>10,000 rows</span></div>
+      <div class="step">📄 predictive_maintenance.csv<span>10,000 rows</span></div>
+      <div class="fa">→</div>
+      <div class="step">🗒 Narrative Generator<span>L/M/H → device type</span></div>
+      <div class="fa">→</div>
+      <div class="step">✂ Text Splitter<span>chunk=512, overlap=64</span></div>
+      <div class="fa">→</div>
+      <div class="step">🔢 Embed<span>text-embedding-3-small</span></div>
+      <div class="fa">→</div>
+      <div class="step">📌 Pinecone Upsert<span>batch=100</span></div>
+      <div class="fa">→</div>
+      <div class="step">🔠 BM25 Build<span>in-memory</span></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat">CSV encoding: <strong>utf-8-sig</strong> (BOM-safe)</div>
+      <div class="stat">Narratives: <strong>20,000</strong> docs → <strong>20,005</strong> chunks</div>
+      <div class="stat">Device types: <strong>12</strong> (L→4 devices · M→4 · H→4)</div>
+      <div class="stat">Hospital units: <strong>8</strong> (ICU · ER · OR · Radiology · Ward A/B · NICU · CCU)</div>
+      <div class="stat">Failure types: <strong>TWF · HDF · PWF · OSF · RNF</strong></div>
+    </div>
+  </div>
+
+  <!-- ── LLM PROVIDERS ──────────────────────────────────── -->
+  <div class="section b-amber">
+    <div class="sec-title">
+      <span class="dot" style="background:var(--amber)"></span>
+      LLM Providers
+    </div>
+    <div class="three-col">
+      <div class="mini-card">
+        <div class="mini-title" style="color:#e3b341">🤖 OpenAI (via Key Gateway)</div>
+        <div class="mini-body">
+          gateway: keygateway.arshnivlabs.com<br/>
+          Agent LLM: <strong style="color:var(--text)">gpt-4o-mini</strong><br/>
+          Embeddings: <strong style="color:var(--text)">text-embedding-3-small</strong><br/>
+          Used by: Analysis, Maintenance, Recommendation agents<br/>
+          Input guardrail topic classifier
+        </div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-title" style="color:#d2a8ff">🤖 GPT-4o-mini (all calls)</div>
+        <div class="mini-body">
+          Output guardrails: <strong style="color:var(--text)">gpt-4o-mini</strong><br/>
+          Hallucination + safety filter<br/>
+          DeepEval judge: <strong style="color:var(--text)">gpt-4o-mini (GPTJudge)</strong><br/>
+          Scores: relevancy · faithfulness · precision<br/>
+          No Anthropic/Claude dependency
+        </div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-title" style="color:#67e8f9">📡 Embeddings</div>
+        <div class="mini-body">
+          Model: text-embedding-3-small<br/>
+          Dimension: <strong style="color:var(--text)">1536</strong><br/>
+          Used at: ingestion + query time<br/>
+          Client: openai.OpenAI (base_url override)<br/>
+          Batch: 100 texts per call
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── EVALUATION ─────────────────────────────────────── -->
+  <div class="section b-forest">
+    <div class="sec-title">
+      <span class="dot" style="background:var(--forest)"></span>
+      Evaluation Framework — DeepEval · GPT-4o-mini judge (GPTJudge)
+    </div>
+    <div class="eval-grid">
+      <div class="em"><strong>Answer Relevancy</strong>Response matches query intent</div>
+      <div class="em"><strong>Faithfulness</strong>No hallucinated facts beyond context</div>
+      <div class="em"><strong>Contextual Precision</strong>Relevant chunks ranked higher</div>
+      <div class="em"><strong>Contextual Recall</strong>All supporting evidence retrieved</div>
+      <div class="em"><strong>Contextual Relevancy</strong>Context chunks are on-topic</div>
+      <div class="em"><strong>Custom G-Eval</strong>Tone · Accuracy · Conciseness</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat">Golden dataset: <strong>app/data/golden_dataset.py</strong></div>
+      <div class="stat">Background task: <strong>POST /api/evaluate</strong></div>
+      <div class="stat">Results displayed in: <strong>EvalMetricsPanel (radar + score cards)</strong></div>
+      <div class="stat">Tracing: <strong>LangSmith</strong> — every agent run, LLM call, retrieval step &amp; HITL feedback</div>
+      <div class="stat">HITL feedback: <strong>approve=1.0 / edit=0.5 / reject=0.0</strong> logged as scored feedback (hitl_decision)</div>
+      <div class="stat">Three-level fallback: <strong>retrieval broadening → agent supervisor fallback → output guardrail fallback</strong></div>
+    </div>
+  </div>
+
+  <!-- ── A2A FLOW ────────────────────────────────────────── -->
+  <div class="section">
+    <div class="sec-title">
+      <span class="dot" style="background:#475569"></span>
+      End-to-End Request Flow
+    </div>
+    <div class="flow">
+      <div class="step">User Query<span>natural language</span></div>
+      <div class="fa">→</div>
+      <div class="step">PII Mask<span>middleware</span></div>
+      <div class="fa">→</div>
+      <div class="step">Input Guard<span>GPT-4o-mini</span></div>
+      <div class="fa">→</div>
+      <div class="step" style="border-color:#22d3ee40;color:#67e8f9">🔎 Retrieval<span>Pinecone+BM25→RRF</span></div>
+      <div class="fa">→</div>
+      <div class="step" style="border-color:#d2992240;color:#e3b341">📉 Analysis<span>z-score+LLM</span></div>
+      <div class="fa">→</div>
+      <div class="step" style="border-color:#3fb95040;color:#56d364">🔧 Maintenance<span>patterns+LLM</span></div>
+      <div class="fa">→</div>
+      <div class="step" style="border-color:#a371f740;color:#d2a8ff">💡 Recommend<span>GPT-4o-mini</span></div>
+      <div class="fa">→</div>
+      <div class="step">Output Guard<span>GPT-4o-mini</span></div>
+      <div class="fa">→</div>
+      <div class="step" style="border-color:#d2992240">⏸ HITL<span>optional pause</span></div>
+      <div class="fa">→</div>
+      <div class="step" style="border-color:#4a907040;color:#7dd3b8">✅ Response<span>structured JSON</span></div>
+    </div>
+  </div>
+
+  <!-- ── STORAGE & PERSISTENCE ──────────────────────────── -->
+  <div class="section">
+    <div class="sec-title">
+      <span class="dot" style="background:#475569"></span>
+      Persistence &amp; Config
+    </div>
+    <div class="five-col">
+      <div class="mini-card">
+        <div class="mini-title" style="color:#e3b341">📌 Pinecone</div>
+        <div class="mini-body">20,005 vectors<br/>cloud · us-east-1<br/>PINECONE_API_KEY</div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-title" style="color:#67e8f9">🗃 SQLite</div>
+        <div class="mini-body">./checkpoints.db<br/>LangGraph agent state<br/>HITL session resume</div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-title" style="color:#a5b4fc">🧠 In-memory</div>
+        <div class="mini-body">BM25Okapi index<br/>_sessions dict (HITL)<br/>Rebuilt on startup</div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-title" style="color:#56d364">⚙ .env Config</div>
+        <div class="mini-body">OPENAI_API_KEY<br/>PINECONE_API_KEY<br/>ANTHROPIC_API_KEY</div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-title" style="color:#ff7b72">🌐 CORS</div>
+        <div class="mini-body">localhost:5173<br/>localhost:3000<br/>All methods allowed</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── LEGEND ─────────────────────────────────────────── -->
+  <div class="legend">
+    <div class="li"><span class="dot" style="background:var(--blue)"></span>Frontend (React/Vite)</div>
+    <div class="li"><span class="dot" style="background:var(--indigo)"></span>FastAPI Backend</div>
+    <div class="li"><span class="dot" style="background:var(--purple)"></span>LangGraph Agents</div>
+    <div class="li"><span class="dot" style="background:var(--teal)"></span>Data / Vector Store</div>
+    <div class="li"><span class="dot" style="background:var(--green)"></span>Ingestion Pipeline</div>
+    <div class="li"><span class="dot" style="background:var(--amber)"></span>LLM Providers</div>
+    <div class="li"><span class="dot" style="background:var(--forest)"></span>Evaluation</div>
+    <div class="li"><span class="dot" style="background:#475569"></span>Cross-cutting</div>
+    <span class="new-tag" style="margin-left:8px">NEW</span>
+    <div class="li" style="color:#56d364">Added in this session</div>
+  </div>
+
+</div>
+</body>
+</html>

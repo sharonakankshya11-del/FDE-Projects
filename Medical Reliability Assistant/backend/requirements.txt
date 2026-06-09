@@ -13,7 +13,7 @@ langchain-community==0.3.13
 langchain-text-splitters==0.3.3
 
 # Vector Store
-pinecone-client==5.0.1
+pinecone==5.0.1
 
 # Embeddings
 openai==1.57.2
